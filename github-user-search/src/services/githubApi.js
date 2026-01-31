@@ -1,48 +1,43 @@
+import axios from 'axios'
+
 const API_BASE_URL =
   import.meta.env.VITE_APP_GITHUB_API_BASE_URL ?? 'https://api.github.com'
 
 const GITHUB_TOKEN = import.meta.env.VITE_APP_GITHUB_API_KEY
 
-function buildHeaders(extraHeaders = {}) {
-  const headers = {
+export const githubClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
     Accept: 'application/vnd.github+json',
-    ...extraHeaders,
-  }
+  },
+})
 
-  // If a token is provided, authenticate requests to increase rate limits.
-  if (GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${GITHUB_TOKEN}`
-  }
-
-  return headers
+// If a token is provided, authenticate requests to increase rate limits.
+if (GITHUB_TOKEN) {
+  githubClient.defaults.headers.common.Authorization = `Bearer ${GITHUB_TOKEN}`
 }
 
 /**
- * Minimal GitHub API request helper.
+ * Minimal GitHub API request helper (Axios).
  *
  * Usage:
  *   const user = await githubRequest(`/users/${login}`)
  */
-export async function githubRequest(path, options = {}) {
-  const url = `${API_BASE_URL}${path}`
+export async function githubRequest(path, config = {}) {
+  try {
+    const response = await githubClient.request({
+      url: path,
+      ...config,
+    })
+    return response.data
+  } catch (error) {
+    const status = error?.response?.status
+    const message = error?.response?.data?.message
 
-  const response = await fetch(url, {
-    ...options,
-    headers: buildHeaders(options.headers),
-  })
-
-  if (!response.ok) {
-    let details = ''
-    try {
-      const body = await response.json()
-      details = body?.message ? `: ${body.message}` : ''
-    } catch {
-      // ignore JSON parse errors
+    if (status) {
+      throw new Error(`GitHub API error ${status}${message ? `: ${message}` : ''}`)
     }
 
-    throw new Error(`GitHub API error ${response.status}${details}`)
+    throw error
   }
-
-  // GitHub returns JSON for most endpoints; callers can override as needed.
-  return response.json()
 }
