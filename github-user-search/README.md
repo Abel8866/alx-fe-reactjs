@@ -1,5 +1,15 @@
 # React + Vite
 
+## Environment variables (GitHub API)
+
+If you want higher GitHub API rate limits, use a GitHub Personal Access Token.
+
+- Copy `.env.example` to `.env`
+- Set `VITE_APP_GITHUB_API_KEY` in `.env`
+- In code, read it via `import.meta.env.VITE_APP_GITHUB_API_KEY`
+
+This project includes a helper in `src/services/githubApi.js` that automatically adds the `Authorization` header when the token is present.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
