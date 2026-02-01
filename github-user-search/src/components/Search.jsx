@@ -1,21 +1,33 @@
 import { useId, useState } from 'react'
+import { fetchUserData } from '../services/githubService.js'
 
 export default function Search({
-  onSearch,
   initialQuery = '',
   disabled = false,
-  loading = false,
-  error = '',
-  user = null,
 }) {
   const inputId = useId()
   const [query, setQuery] = useState(initialQuery)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [user, setUser] = useState(null)
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
     const trimmed = query.trim()
     if (!trimmed) return
-    onSearch?.(trimmed)
+
+    setLoading(true)
+    setError('')
+    setUser(null)
+
+    try {
+      const data = await fetchUserData(trimmed)
+      setUser(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch user')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -33,9 +45,9 @@ export default function Search({
             onChange={(e) => setQuery(e.target.value)}
             placeholder="e.g. torvalds"
             autoComplete="off"
-            disabled={disabled}
+            disabled={disabled || loading}
           />
-          <button className="search-button" type="submit" disabled={disabled}>
+          <button className="search-button" type="submit" disabled={disabled || loading}>
             Search
           </button>
         </div>
