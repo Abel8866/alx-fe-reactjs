@@ -179,7 +179,15 @@ export default function Search({
             <ul className="results-list">
               {results.map((u) => (
                 <li key={u.id ?? u.login} className="result-item">
-                  <img className="avatar" src={u.avatar_url} alt={`${u.login} avatar`} loading="lazy" />
+                  <img
+                    className="avatar"
+                    src={u.avatar_url}
+                    alt={`${u.login} avatar`}
+                    loading="lazy"
+                    decoding="async"
+                    width="36"
+                    height="36"
+                  />
                   <div className="result-main">
                     <div className="result-title">
                       <span className="result-name">{u.name || u.login}</span>

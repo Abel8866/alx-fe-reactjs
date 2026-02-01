@@ -1,0 +1,19 @@
+# Env files (keep secrets out of git)
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Build outputs
+**/dist/
+**/dist-ssr/
+
+# Logs
+*.log
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/
