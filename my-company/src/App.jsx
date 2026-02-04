@@ -1,4 +1,3 @@
-import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Home from "./components/Home.jsx";
@@ -10,13 +9,25 @@ import Navbar from "./components/Navbar.jsx";
 function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
+      <div
+        style={{
+          minHeight: "100vh",
+          background:
+            "linear-gradient(180deg, #0b1020 0%, #0f172a 40%, #0b1020 100%)",
+          color: "#e5e7eb",
+          fontFamily:
+            "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji",
+        }}
+      >
+        <Navbar />
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
