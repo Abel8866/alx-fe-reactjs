@@ -22,6 +22,7 @@ const RecipeDetails = () => {
       <p>
         <Link to="/">← Back</Link>
       </p>
+      <p>Recipe ID: {recipe.id}</p>
       <h2>{recipe.title}</h2>
       <p>{recipe.description}</p>
     </div>
