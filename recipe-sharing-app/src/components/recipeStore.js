@@ -15,7 +15,12 @@ const useRecipeStore = create((set) => ({
   filteredRecipes: [],
   addRecipe: (newRecipe) =>
     set((state) => {
-      const nextRecipes = [...state.recipes, newRecipe];
+      const title = (newRecipe?.title ?? "").trim();
+      const description = (newRecipe?.description ?? "").trim();
+      if (!title || !description) return state;
+
+      const normalizedRecipe = { ...newRecipe, title, description };
+      const nextRecipes = [...state.recipes, normalizedRecipe];
       return {
         recipes: nextRecipes,
         filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
