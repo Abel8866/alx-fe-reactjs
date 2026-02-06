@@ -11,8 +11,8 @@ const computeFilteredRecipes = (recipes, searchTerm) => {
 
 const sameId = (a, b) => String(a) === String(b);
 
-const computeRecommendations = (recipes, favoriteIds, limit = 5) => {
-  const favoriteIdSet = new Set((favoriteIds ?? []).map((id) => String(id)));
+const computeRecommendations = (recipes, favorites, limit = 5) => {
+  const favoriteIdSet = new Set((favorites ?? []).map((id) => String(id)));
   const candidates = (recipes ?? []).filter(
     (recipe) => !favoriteIdSet.has(String(recipe?.id)),
   );
@@ -23,7 +23,7 @@ const useRecipeStore = create((set) => ({
   recipes: [],
   searchTerm: "",
   filteredRecipes: [],
-  favoriteIds: [],
+  favorites: [],
   recommendations: [],
   addRecipe: (newRecipe) =>
     set((state) => {
@@ -36,7 +36,7 @@ const useRecipeStore = create((set) => ({
       return {
         recipes: nextRecipes,
         filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
-        recommendations: computeRecommendations(nextRecipes, state.favoriteIds),
+        recommendations: computeRecommendations(nextRecipes, state.favorites),
       };
     }),
   updateRecipe: (updatedRecipe) =>
@@ -49,7 +49,7 @@ const useRecipeStore = create((set) => ({
       return {
         recipes: nextRecipes,
         filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
-        recommendations: computeRecommendations(nextRecipes, state.favoriteIds),
+        recommendations: computeRecommendations(nextRecipes, state.favorites),
       };
     }),
   deleteRecipe: (recipeId) =>
@@ -58,29 +58,29 @@ const useRecipeStore = create((set) => ({
         (recipe) => recipe.id !== recipeId,
       );
 
-      const nextFavoriteIds = state.favoriteIds.filter(
+      const nextFavorites = state.favorites.filter(
         (id) => !sameId(id, recipeId),
       );
 
       return {
         recipes: nextRecipes,
-        favoriteIds: nextFavoriteIds,
+        favorites: nextFavorites,
         filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
-        recommendations: computeRecommendations(nextRecipes, nextFavoriteIds),
+        recommendations: computeRecommendations(nextRecipes, nextFavorites),
       };
     }),
   setRecipes: (recipes) =>
     set((state) => {
       const recipeIdSet = new Set((recipes ?? []).map((r) => String(r?.id)));
-      const nextFavoriteIds = state.favoriteIds.filter((id) =>
+      const nextFavorites = state.favorites.filter((id) =>
         recipeIdSet.has(String(id)),
       );
 
       return {
         recipes,
-        favoriteIds: nextFavoriteIds,
+        favorites: nextFavorites,
         filteredRecipes: computeFilteredRecipes(recipes, state.searchTerm),
-        recommendations: computeRecommendations(recipes, nextFavoriteIds),
+        recommendations: computeRecommendations(recipes, nextFavorites),
       };
     }),
 
@@ -96,38 +96,38 @@ const useRecipeStore = create((set) => ({
 
   addFavorite: (recipeId) =>
     set((state) => {
-      const alreadyFavorite = state.favoriteIds.some((id) =>
+      const alreadyFavorite = state.favorites.some((id) =>
         sameId(id, recipeId),
       );
       if (alreadyFavorite) return state;
-      const nextFavoriteIds = [...state.favoriteIds, recipeId];
+      const nextFavorites = [...state.favorites, recipeId];
       return {
-        favoriteIds: nextFavoriteIds,
-        recommendations: computeRecommendations(state.recipes, nextFavoriteIds),
+        favorites: nextFavorites,
+        recommendations: computeRecommendations(state.recipes, nextFavorites),
       };
     }),
   removeFavorite: (recipeId) =>
     set((state) => {
-      const nextFavoriteIds = state.favoriteIds.filter(
+      const nextFavorites = state.favorites.filter(
         (id) => !sameId(id, recipeId),
       );
       return {
-        favoriteIds: nextFavoriteIds,
-        recommendations: computeRecommendations(state.recipes, nextFavoriteIds),
+        favorites: nextFavorites,
+        recommendations: computeRecommendations(state.recipes, nextFavorites),
       };
     }),
   toggleFavorite: (recipeId) =>
     set((state) => {
-      const alreadyFavorite = state.favoriteIds.some((id) =>
+      const alreadyFavorite = state.favorites.some((id) =>
         sameId(id, recipeId),
       );
-      const nextFavoriteIds = alreadyFavorite
-        ? state.favoriteIds.filter((id) => !sameId(id, recipeId))
-        : [...state.favoriteIds, recipeId];
+      const nextFavorites = alreadyFavorite
+        ? state.favorites.filter((id) => !sameId(id, recipeId))
+        : [...state.favorites, recipeId];
 
       return {
-        favoriteIds: nextFavoriteIds,
-        recommendations: computeRecommendations(state.recipes, nextFavoriteIds),
+        favorites: nextFavorites,
+        recommendations: computeRecommendations(state.recipes, nextFavorites),
       };
     }),
 }));

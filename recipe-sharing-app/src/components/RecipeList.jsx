@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const RecipeList = () => {
   const recipes = useRecipeStore((state) => state.filteredRecipes);
-  const favoriteIds = useRecipeStore((state) => state.favoriteIds);
+  const favorites = useRecipeStore((state) => state.favorites);
   const toggleFavorite = useRecipeStore((state) => state.toggleFavorite);
 
   return (
@@ -17,7 +17,7 @@ const RecipeList = () => {
           <p>{recipe.description}</p>
           <div className="recipe-actions">
             <button type="button" onClick={() => toggleFavorite(recipe.id)}>
-              {favoriteIds.some((id) => String(id) === String(recipe.id))
+              {favorites.some((id) => String(id) === String(recipe.id))
                 ? "Remove favorite"
                 : "Add to favorites"}
             </button>
