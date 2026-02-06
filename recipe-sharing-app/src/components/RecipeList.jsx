@@ -6,9 +6,7 @@ const RecipeList = () => {
 
   return (
     <div>
-      {recipes.length === 0 ? (
-        <p>No recipes found.</p>
-      ) : null}
+      {recipes.length === 0 ? <p>No recipes found.</p> : null}
       {recipes.map((recipe) => (
         <div key={recipe.id}>
           <h3>
