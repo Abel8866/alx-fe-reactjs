@@ -13,7 +13,7 @@ const RecommendationsList = () => {
       {recommendations.length === 0 ? <p>No recommendations yet.</p> : null}
       <div className="panel-list">
         {recommendations.map((recipe) => {
-          const isFavorite = favoriteIds.some(
+          const isFavorite = favorites.some(
             (id) => String(id) === String(recipe.id),
           );
 

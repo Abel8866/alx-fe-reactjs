@@ -8,7 +8,7 @@ const RecipeDetails = () => {
     state.recipes.find((r) => String(r.id) === String(id)),
   );
 
-  const favoriteIds = useRecipeStore((state) => state.favoriteIds);
+  const favorites = useRecipeStore((state) => state.favorites);
   const toggleFavorite = useRecipeStore((state) => state.toggleFavorite);
 
   if (!recipe) {
@@ -30,7 +30,7 @@ const RecipeDetails = () => {
       <p>{recipe.description}</p>
       <p>
         <button type="button" onClick={() => toggleFavorite(recipe.id)}>
-          {favoriteIds.some((fid) => String(fid) === String(recipe.id))
+          {favorites.some((fid) => String(fid) === String(recipe.id))
             ? "Remove favorite"
             : "Add to favorites"}
         </button>
