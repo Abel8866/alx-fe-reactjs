@@ -4,7 +4,7 @@ import useRecipeStore from "./recipeStore";
 
 const RecommendationsList = () => {
   const recommendations = useRecipeStore((state) => state.recommendations);
-  const favoriteIds = useRecipeStore((state) => state.favoriteIds);
+  const favorites = useRecipeStore((state) => state.favorites);
   const toggleFavorite = useRecipeStore((state) => state.toggleFavorite);
 
   return (
