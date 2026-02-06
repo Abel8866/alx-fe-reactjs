@@ -6,14 +6,23 @@ const SearchBar = () => {
   const searchTerm = useRecipeStore((state) => state.searchTerm);
 
   return (
-    <input
-      type="text"
-      placeholder="Search recipes..."
-      aria-label="Search recipes"
-      className="search-input"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
+    <div className="search-row">
+      <input
+        type="text"
+        placeholder="Search recipes..."
+        aria-label="Search recipes"
+        className="search-input"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <button
+        type="button"
+        onClick={() => setSearchTerm("")}
+        disabled={!searchTerm}
+      >
+        Reset
+      </button>
+    </div>
   );
 };
 
