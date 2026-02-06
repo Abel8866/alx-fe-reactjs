@@ -5,9 +5,9 @@ function UserProfile() {
       <img
         src="https://via.placeholder.com/150"
         alt="User"
-        className="w-36 h-36 rounded-full object-cover shadow-sm ring-4 ring-blue-100"
+        className="w-36 h-36 rounded-full object-cover shadow-sm ring-4 ring-blue-100 mx-auto"
       />
-      <h1 className="mt-5 text-2xl font-semibold text-blue-800">John Doe</h1>
+      <h1 className="mt-5 text-xl font-semibold text-blue-800 my-4">John Doe</h1>
       <p className="mt-2 text-base leading-relaxed text-gray-600">
         Developer at Example Co. Loves to write code and explore new technologies.
       </p>
