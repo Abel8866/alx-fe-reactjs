@@ -14,3 +14,20 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Testing search + filtering
+
+- Install dependencies: `npm install`
+- Run tests: `npm run test`
+- Watch mode: `npm run test:watch`
+
+The tests cover:
+
+- Store filtering behavior (case-insensitive match on title, trim handling)
+- UI integration (RecipeList updates as the user types in SearchBar)
+
+## Manual performance check (large recipe list)
+
+To sanity-check responsiveness with lots of recipes, seed the store with a large list and type into the search input.
+For example, you can temporarily add a one-time seeding call in a dev-only spot (like `App.jsx`) using `setRecipes([...])` and try sizes like 5k–20k items.
+If typing feels laggy, the next step would be to debounce filtering or virtualize the list.
