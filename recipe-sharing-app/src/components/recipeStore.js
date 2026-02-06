@@ -14,19 +14,35 @@ const useRecipeStore = create((set) => ({
   searchTerm: "",
   filteredRecipes: [],
   addRecipe: (newRecipe) =>
-    set((state) => ({ recipes: [...state.recipes, newRecipe] })),
+    set((state) => {
+      const nextRecipes = [...state.recipes, newRecipe];
+      return {
+        recipes: nextRecipes,
+        filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
+      };
+    }),
   updateRecipe: (updatedRecipe) =>
-    set((state) => ({
-      recipes: state.recipes.map((recipe) =>
+    set((state) => {
+      const nextRecipes = state.recipes.map((recipe) =>
         recipe.id === updatedRecipe.id
           ? { ...recipe, ...updatedRecipe }
           : recipe,
-      ),
-    })),
+      );
+      return {
+        recipes: nextRecipes,
+        filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
+      };
+    }),
   deleteRecipe: (recipeId) =>
-    set((state) => ({
-      recipes: state.recipes.filter((recipe) => recipe.id !== recipeId),
-    })),
+    set((state) => {
+      const nextRecipes = state.recipes.filter(
+        (recipe) => recipe.id !== recipeId,
+      );
+      return {
+        recipes: nextRecipes,
+        filteredRecipes: computeFilteredRecipes(nextRecipes, state.searchTerm),
+      };
+    }),
   setRecipes: (recipes) =>
     set((state) => ({
       recipes,

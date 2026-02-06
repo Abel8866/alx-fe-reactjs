@@ -8,6 +8,7 @@ import {
 import AddRecipeForm from "./components/AddRecipeForm";
 import RecipeDetails from "./components/RecipeDetails";
 import RecipeList from "./components/RecipeList";
+import SearchBar from "./components/SearchBar";
 
 function App() {
   return (
@@ -18,8 +19,13 @@ function App() {
           path="/"
           element={
             <>
-              <AddRecipeForm />
-              <RecipeList />
+              <div className="recipe-page">
+                <AddRecipeForm />
+                <div className="search-section">
+                  <SearchBar />
+                </div>
+                <RecipeList />
+              </div>
             </>
           }
         />
