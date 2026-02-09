@@ -6,6 +6,7 @@ function AddRecipeForm() {
   const [steps, setSteps] = useState("");
 
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const ingredientItems = useMemo(() => {
     return ingredients
@@ -14,7 +15,7 @@ function AddRecipeForm() {
       .filter(Boolean);
   }, [ingredients]);
 
-  const errors = useMemo(() => {
+  const validate = () => {
     const nextErrors = {};
 
     if (!title.trim()) nextErrors.title = "Title is required.";
@@ -25,8 +26,9 @@ function AddRecipeForm() {
     }
     if (!steps.trim()) nextErrors.steps = "Preparation steps are required.";
 
+    setErrors(nextErrors);
     return nextErrors;
-  }, [title, ingredients, steps, ingredientItems.length]);
+  };
 
   const isValid = Object.keys(errors).length === 0;
 
@@ -34,7 +36,8 @@ function AddRecipeForm() {
     event.preventDefault();
     setSubmitAttempted(true);
 
-    if (!isValid) return;
+    const nextErrors = validate();
+    if (Object.keys(nextErrors).length > 0) return;
 
     // Placeholder “submit”: in later steps you can wire this into state/store/API.
     const payload = {
@@ -53,6 +56,7 @@ function AddRecipeForm() {
     setIngredients("");
     setSteps("");
     setSubmitAttempted(false);
+    setErrors({});
   };
 
   return (
