@@ -3,30 +3,113 @@
 		"id": 1,
 		"title": "Spaghetti Carbonara",
 		"summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
-		"image": "https://via.placeholder.com/150"
+		"image": "https://via.placeholder.com/150",
+		"ingredients": [
+			"Spaghetti",
+			"Eggs",
+			"Parmesan cheese",
+			"Bacon",
+			"Black pepper",
+			"Salt"
+		],
+		"instructions": [
+			"Cook spaghetti in salted boiling water until al dente.",
+			"Crisp bacon in a pan, then remove from heat.",
+			"Whisk eggs with grated Parmesan and plenty of black pepper.",
+			"Toss hot pasta with bacon, then quickly stir in egg-cheese mixture off heat.",
+			"Serve immediately with extra Parmesan and pepper."
+		]
 	},
 	{
 		"id": 2,
 		"title": "Chicken Tikka Masala",
 		"summary": "Chunks of grilled chicken (tikka) cooked in a smooth buttery & creamy tomato based gravy.",
-		"image": "https://via.placeholder.com/150"
+		"image": "https://via.placeholder.com/150",
+		"ingredients": [
+			"Chicken",
+			"Yogurt",
+			"Garam masala",
+			"Tomato sauce",
+			"Cream",
+			"Butter",
+			"Garlic",
+			"Ginger"
+		],
+		"instructions": [
+			"Marinate chicken in yogurt and spices, then grill or pan-sear until browned.",
+			"Simmer tomato sauce with butter, garlic, and ginger.",
+			"Add grilled chicken to the sauce and cook until tender.",
+			"Stir in cream and adjust seasoning.",
+			"Serve with rice or naan."
+		]
 	},
 	{
 		"id": 3,
 		"title": "Vegetable Stir-Fry",
 		"summary": "A quick and colorful mix of vegetables tossed in a savory soy-ginger sauce.",
-		"image": "https://via.placeholder.com/150"
+		"image": "https://via.placeholder.com/150",
+		"ingredients": [
+			"Broccoli",
+			"Bell peppers",
+			"Carrots",
+			"Soy sauce",
+			"Garlic",
+			"Ginger",
+			"Sesame oil"
+		],
+		"instructions": [
+			"Chop vegetables into bite-size pieces.",
+			"Heat a wok or skillet and add a little oil.",
+			"Stir-fry vegetables over high heat until crisp-tender.",
+			"Add soy sauce, garlic, and ginger; toss to coat.",
+			"Finish with a splash of sesame oil and serve hot."
+		]
 	},
 	{
 		"id": 4,
 		"title": "Beef Tacos",
 		"summary": "Seasoned ground beef served in crispy taco shells with fresh toppings.",
-		"image": "https://via.placeholder.com/150"
+		"image": "https://via.placeholder.com/150",
+		"ingredients": [
+			"Ground beef",
+			"Taco seasoning",
+			"Taco shells",
+			"Lettuce",
+			"Tomatoes",
+			"Cheddar cheese",
+			"Sour cream"
+		],
+		"instructions": [
+			"Cook ground beef in a skillet until browned.",
+			"Stir in taco seasoning with a splash of water and simmer briefly.",
+			"Warm taco shells according to package directions.",
+			"Fill shells with beef and top with lettuce, tomatoes, cheese, and sour cream.",
+			"Serve immediately."
+		]
 	},
 	{
 		"id": 5,
 		"title": "Greek Salad",
 		"summary": "A refreshing salad with tomatoes, cucumber, olives, feta cheese, and oregano.",
-		"image": "https://via.placeholder.com/150"
+		"image": "https://via.placeholder.com/150",
+		"ingredients": [
+			"Tomatoes",
+			"Cucumber",
+			"Red onion",
+			"Olives",
+			"Feta cheese",
+			"Olive oil",
+			"Lemon juice",
+			"Oregano",
+			"Salt",
+			"Black pepper"
+		],
+		"instructions": [
+			"Chop tomatoes and cucumber; thinly slice red onion.",
+			"Combine vegetables and olives in a bowl.",
+			"Drizzle with olive oil and lemon juice; season with oregano, salt, and pepper.",
+			"Top with crumbled feta.",
+			"Toss gently and serve chilled."
+		]
 	}
 ]
