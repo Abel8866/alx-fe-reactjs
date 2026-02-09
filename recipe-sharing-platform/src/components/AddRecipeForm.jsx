@@ -61,7 +61,7 @@ function AddRecipeForm() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
+      <main className="mx-auto max-w-3xl p-4 sm:p-6 md:p-8 lg:p-8">
         <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
           <div className="border-b border-gray-200 p-4 sm:p-6">
             <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">
