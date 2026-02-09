@@ -16,37 +16,45 @@ function RecipeDetail() {
 
   if (!recipe) {
     return (
-      <section>
-        <p>Recipe not found.</p>
-        <Link to="/">Back to home</Link>
+      <section className="p-4">
+        <p className="text-base">Recipe not found.</p>
+        <Link className="text-blue-600" to="/">
+          Back to home
+        </Link>
       </section>
     );
   }
 
   return (
-    <section>
-      <Link to="/">Back</Link>
+    <section className="p-4">
+      <Link className="text-blue-600" to="/">
+        Back
+      </Link>
 
-      <h1>{recipe.title}</h1>
+      <h1 className="text-2xl font-bold">{recipe.title}</h1>
       {recipe.image ? (
-        <img src={recipe.image} alt={recipe.title} />
+        <img className="shadow-sm" src={recipe.image} alt={recipe.title} />
       ) : (
-        <div aria-label="image" />
+        <div className="shadow-sm" aria-label="image" />
       )}
 
-      {recipe.summary ? <p>{recipe.summary}</p> : null}
+      {recipe.summary ? <p className="text-base">{recipe.summary}</p> : null}
 
-      <h2>Ingredients</h2>
+      <h2 className="text-xl font-semibold">Ingredients</h2>
       <ul>
         {(recipe.ingredients ?? []).map((ingredient) => (
-          <li key={ingredient}>{ingredient}</li>
+          <li className="text-base" key={ingredient}>
+            {ingredient}
+          </li>
         ))}
       </ul>
 
-      <h2>Instructions</h2>
+      <h2 className="text-xl font-semibold">Instructions</h2>
       <ol>
         {(recipe.instructions ?? []).map((step) => (
-          <li key={step}>{step}</li>
+          <li className="text-base" key={step}>
+            {step}
+          </li>
         ))}
       </ol>
     </section>
