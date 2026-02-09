@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import recipesData from "../data.json";
 
@@ -22,25 +23,30 @@ function HomePage() {
         <section className="mt-6 sm:mt-8">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4">
             {recipes.map((recipe) => (
-              <article
+              <Link
                 key={recipe.id}
+                to={`/recipe/${recipe.id}`}
                 className="group h-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
               >
-                <div className="overflow-hidden">
-                  <img
-                    src={recipe.image}
-                    alt={recipe.title}
-                    className="h-44 w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="p-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {recipe.title}
-                  </h2>
-                  <p className="mt-2 text-sm text-gray-600">{recipe.summary}</p>
-                </div>
-              </article>
+                <article>
+                  <div className="overflow-hidden">
+                    <img
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="h-44 w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {recipe.title}
+                    </h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {recipe.summary}
+                    </p>
+                  </div>
+                </article>
+              </Link>
             ))}
           </div>
 
