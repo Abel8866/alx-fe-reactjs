@@ -1,45 +1,56 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPeopleRequested,
   selectPeople,
   selectPeopleError,
-  selectPeoplePage,
-  selectPeopleQuery,
   selectPeopleStatus,
   selectPeopleTotalPages,
   setPeoplePage,
   setPeopleQuery,
 } from "../state/peopleSlice";
 import { paths } from "../../../routes/paths";
+import Loading from "../../../shared/components/Feedback/Loading";
+import ErrorState from "../../../shared/components/Feedback/ErrorState";
+import EmptyState from "../../../shared/components/Feedback/EmptyState";
+
+function toPositiveInt(value, fallback = 1) {
+  const n = Number.parseInt(String(value), 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
 
 export default function PeopleListPage() {
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL is the source of truth (same pattern as MoviesListPage)
+  const urlQuery = searchParams.get("search") ?? "";
+  const urlPage = toPositiveInt(searchParams.get("page") ?? "1", 1);
 
   const items = useSelector(selectPeople);
   const status = useSelector(selectPeopleStatus);
   const error = useSelector(selectPeopleError);
-  const page = useSelector(selectPeoplePage);
   const totalPages = useSelector(selectPeopleTotalPages);
-  const query = useSelector(selectPeopleQuery);
 
-  const [queryInput, setQueryInput] = useState(query);
-  const debouncedQuery = useMemo(() => queryInput.trim(), [queryInput]);
-
+  // When URL changes: update Redux + fetch
   useEffect(() => {
-    const id = setTimeout(() => {
-      dispatch(setPeopleQuery(debouncedQuery));
-    }, 400);
-    return () => clearTimeout(id);
-  }, [dispatch, debouncedQuery]);
-
-  useEffect(() => {
+    dispatch(setPeopleQuery(urlQuery));
+    dispatch(setPeoplePage(urlPage));
     dispatch(fetchPeopleRequested());
-  }, [dispatch, page, query]);
+  }, [dispatch, urlPage, urlQuery]);
+
+  const goToPage = (nextPage) => {
+    const safeNext = Math.min(Math.max(1, nextPage), totalPages || 1);
+
+    const next = {};
+    if (urlQuery) next.search = urlQuery;
+    next.page = String(safeNext);
+    setSearchParams(next);
+  };
 
   return (
-    <main className="p-6 max-w-4xl mx-auto">
+    <main>
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">People</h1>
         <Link className="text-sm underline" to={paths.movies}>
@@ -47,20 +58,28 @@ export default function PeopleListPage() {
         </Link>
       </div>
 
-      <input
-        className="mt-4 w-full rounded border px-3 py-2"
-        placeholder="Search people..."
-        value={queryInput}
-        onChange={(e) => setQueryInput(e.target.value)}
-      />
+      {status === "loading" && (
+        <div className="mt-6">
+          <Loading />
+        </div>
+      )}
 
-      {status === "loading" && <p className="mt-4">Loading...</p>}
-      {status === "failed" && <p className="mt-4 text-red-600">{error}</p>}
+      {status === "failed" && (
+        <div className="mt-6">
+          <ErrorState title="Something went wrong" message={error} />
+        </div>
+      )}
 
-      {status === "succeeded" && (
-        <ul className="mt-4 space-y-2">
+      {status === "succeeded" && items.length === 0 && (
+        <div className="mt-6">
+          <EmptyState title="No results" message="Try a different search." />
+        </div>
+      )}
+
+      {status === "succeeded" && items.length > 0 && (
+        <ul className="mt-6 space-y-2">
           {items.map((person) => (
-            <li key={person.id} className="rounded border p-3">
+            <li key={person.id} className="rounded border p-3 bg-white">
               <Link className="underline" to={paths.personDetails(person.id)}>
                 {person.name}
               </Link>
@@ -74,23 +93,21 @@ export default function PeopleListPage() {
         </ul>
       )}
 
-      <div className="mt-6 flex items-center gap-3">
+      <div className="mt-8 flex items-center justify-center gap-3">
         <button
           className="rounded border px-3 py-2 disabled:opacity-50"
-          onClick={() => dispatch(setPeoplePage(Math.max(1, page - 1)))}
-          disabled={page <= 1}
+          onClick={() => goToPage(urlPage - 1)}
+          disabled={urlPage <= 1}
         >
           Prev
         </button>
         <span className="text-sm">
-          Page {page} / {totalPages}
+          Page {urlPage} / {totalPages}
         </span>
         <button
           className="rounded border px-3 py-2 disabled:opacity-50"
-          onClick={() =>
-            dispatch(setPeoplePage(Math.min(totalPages, page + 1)))
-          }
-          disabled={page >= totalPages}
+          onClick={() => goToPage(urlPage + 1)}
+          disabled={urlPage >= totalPages}
         >
           Next
         </button>

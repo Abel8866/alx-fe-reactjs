@@ -23,6 +23,9 @@ export async function fetchMovies({ query, page = 1 } = {}) {
 }
 
 export async function fetchMovieDetails({ id } = {}) {
-  const { url, params } = tmdbEndpoint(`/movie/${id}`, {});
+  // include cast/crew in the same request
+  const { url, params } = tmdbEndpoint(`/movie/${id}`, {
+    append_to_response: "credits",
+  });
   return getJson(url, { params });
 }

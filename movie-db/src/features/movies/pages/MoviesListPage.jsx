@@ -1,45 +1,80 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchMoviesRequested,
   selectMovies,
   selectMoviesError,
-  selectMoviesPage,
-  selectMoviesQuery,
   selectMoviesStatus,
   selectMoviesTotalPages,
   setMoviesPage,
   setMoviesQuery,
 } from "../state/moviesSlice";
 import { paths } from "../../../routes/paths";
+import useDebounce from "../../../shared/hooks/useDebounce";
+import Loading from "../../../shared/components/Feedback/Loading";
+import ErrorState from "../../../shared/components/Feedback/ErrorState";
+import EmptyState from "../../../shared/components/Feedback/EmptyState";
+
+function toPositiveInt(value, fallback = 1) {
+  const n = Number.parseInt(String(value), 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
 
 export default function MoviesListPage() {
   const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL is the source of truth (like movies-browser)
+  const urlQuery = searchParams.get("search") ?? "";
+  const urlPage = toPositiveInt(searchParams.get("page") ?? "1", 1);
 
   const items = useSelector(selectMovies);
   const status = useSelector(selectMoviesStatus);
   const error = useSelector(selectMoviesError);
-  const page = useSelector(selectMoviesPage);
   const totalPages = useSelector(selectMoviesTotalPages);
-  const query = useSelector(selectMoviesQuery);
 
-  const [queryInput, setQueryInput] = useState(query);
-  const debouncedQuery = useMemo(() => queryInput.trim(), [queryInput]);
-
-  useEffect(() => {
-    const id = setTimeout(() => {
-      dispatch(setMoviesQuery(debouncedQuery));
-    }, 400);
-    return () => clearTimeout(id);
-  }, [dispatch, debouncedQuery]);
+  // input mirrors URL (so refresh/back/forward keeps UI consistent)
+  const [queryInput, setQueryInput] = useState(urlQuery);
 
   useEffect(() => {
+    setQueryInput(urlQuery);
+  }, [urlQuery]);
+
+  const debouncedQueryInput = useDebounce(queryInput, 400);
+  const normalizedDebouncedQuery = useMemo(
+    () => (debouncedQueryInput || "").trim(),
+    [debouncedQueryInput],
+  );
+
+  // When user types: update URL (and reset page to 1)
+  useEffect(() => {
+    if (normalizedDebouncedQuery === urlQuery) return;
+
+    const next = {};
+    if (normalizedDebouncedQuery) next.search = normalizedDebouncedQuery;
+    next.page = "1";
+    setSearchParams(next, { replace: true });
+  }, [normalizedDebouncedQuery, setSearchParams, urlQuery]);
+
+  // When URL changes: update Redux + fetch
+  useEffect(() => {
+    dispatch(setMoviesQuery(urlQuery));
+    dispatch(setMoviesPage(urlPage));
     dispatch(fetchMoviesRequested());
-  }, [dispatch, page, query]);
+  }, [dispatch, urlPage, urlQuery]);
+
+  const goToPage = (nextPage) => {
+    const safeNext = Math.min(Math.max(1, nextPage), totalPages || 1);
+
+    const next = {};
+    if (urlQuery) next.search = urlQuery;
+    next.page = String(safeNext);
+    setSearchParams(next);
+  };
 
   return (
-    <main className="p-6 max-w-4xl mx-auto">
+    <main className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold">Movies</h1>
         <Link className="text-sm underline" to={paths.people}>
@@ -54,43 +89,77 @@ export default function MoviesListPage() {
         onChange={(e) => setQueryInput(e.target.value)}
       />
 
-      {status === "loading" && <p className="mt-4">Loading...</p>}
-      {status === "failed" && <p className="mt-4 text-red-600">{error}</p>}
+      {status === "loading" && (
+        <div className="mt-6">
+          <Loading />
+        </div>
+      )}
+      {status === "failed" && (
+        <div className="mt-6">
+          <ErrorState title="Something went wrong" message={error} />
+        </div>
+      )}
 
-      {status === "succeeded" && (
-        <ul className="mt-4 space-y-2">
-          {items.map((movie) => (
-            <li key={movie.id} className="rounded border p-3">
-              <Link className="underline" to={paths.movieDetails(movie.id)}>
-                {movie.title}
-              </Link>
-              {movie.release_date ? (
-                <span className="ml-2 text-sm text-gray-500">
-                  ({movie.release_date})
-                </span>
-              ) : null}
-            </li>
-          ))}
+      {status === "succeeded" && items.length === 0 && (
+        <div className="mt-6">
+          <EmptyState title="No results" message="Try a different search." />
+        </div>
+      )}
+
+      {status === "succeeded" && items.length > 0 && (
+        <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map((movie) => {
+            const posterUrl = movie.poster_path
+              ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
+              : null;
+
+            return (
+              <li
+                key={movie.id}
+                className="rounded border bg-white overflow-hidden"
+              >
+                <Link to={paths.movieDetails(movie.id)} className="block">
+                  <div className="aspect-[2/3] bg-gray-100">
+                    {posterUrl ? (
+                      <img
+                        src={posterUrl}
+                        alt={movie.title}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : null}
+                  </div>
+
+                  <div className="p-3">
+                    <div className="font-semibold">{movie.title}</div>
+                    {movie.release_date ? (
+                      <div className="mt-1 text-sm text-gray-500">
+                        {movie.release_date}
+                      </div>
+                    ) : null}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
 
-      <div className="mt-6 flex items-center gap-3">
+      <div className="mt-8 flex items-center justify-center gap-3">
         <button
           className="rounded border px-3 py-2 disabled:opacity-50"
-          onClick={() => dispatch(setMoviesPage(Math.max(1, page - 1)))}
-          disabled={page <= 1}
+          onClick={() => goToPage(urlPage - 1)}
+          disabled={urlPage <= 1}
         >
           Prev
         </button>
         <span className="text-sm">
-          Page {page} / {totalPages}
+          Page {urlPage} / {totalPages}
         </span>
         <button
           className="rounded border px-3 py-2 disabled:opacity-50"
-          onClick={() =>
-            dispatch(setMoviesPage(Math.min(totalPages, page + 1)))
-          }
-          disabled={page >= totalPages}
+          onClick={() => goToPage(urlPage + 1)}
+          disabled={urlPage >= totalPages}
         >
           Next
         </button>
