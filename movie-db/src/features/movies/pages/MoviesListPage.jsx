@@ -15,6 +15,7 @@ import useDebounce from "../../../shared/hooks/useDebounce";
 import Loading from "../../../shared/components/Feedback/Loading";
 import ErrorState from "../../../shared/components/Feedback/ErrorState";
 import EmptyState from "../../../shared/components/Feedback/EmptyState";
+import MoviesGrid from "../components/MoviesGrid";
 
 function toPositiveInt(value, fallback = 1) {
   const n = Number.parseInt(String(value), 10);
@@ -107,42 +108,7 @@ export default function MoviesListPage() {
       )}
 
       {status === "succeeded" && items.length > 0 && (
-        <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((movie) => {
-            const posterUrl = movie.poster_path
-              ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
-              : null;
-
-            return (
-              <li
-                key={movie.id}
-                className="rounded border bg-white overflow-hidden"
-              >
-                <Link to={paths.movieDetails(movie.id)} className="block">
-                  <div className="aspect-[2/3] bg-gray-100">
-                    {posterUrl ? (
-                      <img
-                        src={posterUrl}
-                        alt={movie.title}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : null}
-                  </div>
-
-                  <div className="p-3">
-                    <div className="font-semibold">{movie.title}</div>
-                    {movie.release_date ? (
-                      <div className="mt-1 text-sm text-gray-500">
-                        {movie.release_date}
-                      </div>
-                    ) : null}
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <MoviesGrid items={items} />
       )}
 
       <div className="mt-8 flex items-center justify-center gap-3">
