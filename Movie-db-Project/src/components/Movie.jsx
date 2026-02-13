@@ -21,6 +21,7 @@ function Movie() {
       {movieList.map((movie) =>
         movie?.poster_path ? (
           <img
+            style={{ width: "280px", height: "250px", marginLeft: "10px", marginTop: "20px" }}
             key={movie.id}
             src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
             alt={movie.title ?? "movie poster"}
