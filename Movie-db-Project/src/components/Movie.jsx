@@ -1,21 +1,27 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 function Movie() {
+
+  const [movieList, setMovieList] = useState([]);
+
   const getMovie = () => {
     fetch(
       "https://api.themoviedb.org/3/discover/movie?api_key=afc035f8a9382b64084f0d247a29675f",
     )
       .then((res) => res.json())
-      .then((json) => console.log(json));
+      .then((json) => setMovieList(json.results));
   };
 
   useEffect(() => {
     getMovie();
   }, []);
 
+  console.log(movieList);
   return (
     <div>
-      <h1>Movie</h1>
+      {movieList.map(() => (
+        <img src={`https://image.tmdb.org/t/p/w500/${movieList.poster_path}`} alt="movie poster" />
+      ))}
     </div>
   );
 }
