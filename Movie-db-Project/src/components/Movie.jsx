@@ -6,89 +6,121 @@ import {
   tmdbImageUrl,
 } from "../services/tmdb";
 
+const MAX_MOVIES = 500;
+const MOVIES_PER_PAGE = 20;
+const MAX_PAGES = Math.ceil(MAX_MOVIES / MOVIES_PER_PAGE);
+
 function Movie() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [genreMap, setGenreMap] = useState({});
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const loadMoreControllerRef = useRef(null);
+  const gridTopRef = useRef(null);
+  const pageControllerRef = useRef(null);
+
+  function clampPage(value) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return 1;
+    return Math.max(1, Math.min(MAX_PAGES, Math.floor(numeric)));
+  }
+
+  async function loadPage(targetPage, { signal } = {}) {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const safePage = clampPage(targetPage);
+
+      const moviesPage = await discoverMoviesPage({
+        signal,
+        page: safePage,
+      });
+
+      setMovieList(Array.isArray(moviesPage.results) ? moviesPage.results : []);
+      const apiPage = moviesPage.page ?? safePage;
+      const apiTotalPages = moviesPage.totalPages ?? 1;
+      const cappedTotalPages = Math.max(1, Math.min(apiTotalPages, MAX_PAGES));
+
+      setTotalPages(cappedTotalPages);
+      setPage(Math.max(1, Math.min(apiPage, cappedTotalPages)));
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      setError(err instanceof Error ? err.message : "Failed to load movies.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
     const controller = new AbortController();
+    pageControllerRef.current?.abort?.();
+    pageControllerRef.current = controller;
 
-    async function load() {
+    (async () => {
       try {
         setIsLoading(true);
         setError("");
-        const [moviesPage, genres] = await Promise.all([
-          discoverMoviesPage({ signal: controller.signal, page: 1 }),
-          getMovieGenreMap(),
-        ]);
 
-        setMovieList(moviesPage.results);
+        const [genres] = await Promise.all([getMovieGenreMap()]);
         setGenreMap(genres);
-        setPage(1);
-        setHasMore(moviesPage.page < moviesPage.totalPages);
-      } catch (err) {
-        if (err?.name === "AbortError") return;
-        setError(err instanceof Error ? err.message : "Failed to load movies.");
+
+        await loadPage(1, { signal: controller.signal });
       } finally {
         setIsLoading(false);
       }
-    }
+    })();
 
-    load();
     return () => {
       controller.abort();
-      loadMoreControllerRef.current?.abort?.();
+      pageControllerRef.current?.abort?.();
     };
   }, []);
 
-  async function handleLoadMore() {
-    if (isLoading || isLoadingMore || !hasMore) return;
+  function scrollToTop() {
+    if (gridTopRef.current?.scrollIntoView) {
+      gridTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    if (typeof window !== "undefined" && window?.scrollTo) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
+  function beginNavigation(targetPage) {
+    const safeTarget = clampPage(targetPage);
+    if (safeTarget === page) return;
+
+    scrollToTop();
 
     const controller = new AbortController();
-    loadMoreControllerRef.current?.abort?.();
-    loadMoreControllerRef.current = controller;
+    pageControllerRef.current?.abort?.();
+    pageControllerRef.current = controller;
 
-    try {
-      setIsLoadingMore(true);
-      setError("");
+    void loadPage(safeTarget, { signal: controller.signal });
+  }
 
-      const nextPage = page + 1;
-      const moviesPage = await discoverMoviesPage({
-        signal: controller.signal,
-        page: nextPage,
-      });
+  function handleFirst() {
+    if (isLoading || page <= 1) return;
+    beginNavigation(1);
+  }
 
-      setMovieList((prev) => {
-        const seen = new Set(prev.map((m) => m?.id).filter(Boolean));
-        const next = Array.isArray(moviesPage.results)
-          ? moviesPage.results
-          : [];
-        const deduped = next.filter((m) => {
-          const id = m?.id;
-          if (!id || seen.has(id)) return false;
-          seen.add(id);
-          return true;
-        });
-        return [...prev, ...deduped];
-      });
+  function handlePrev() {
+    if (isLoading || page <= 1) return;
+    beginNavigation(page - 1);
+  }
 
-      setPage(moviesPage.page);
-      setHasMore(moviesPage.page < moviesPage.totalPages);
-    } catch (err) {
-      if (err?.name === "AbortError") return;
-      setError(
-        err instanceof Error ? err.message : "Failed to load more movies.",
-      );
-    } finally {
-      setIsLoadingMore(false);
-    }
+  function handleNext() {
+    if (isLoading || page >= totalPages) return;
+    beginNavigation(page + 1);
+  }
+
+  function handleLast() {
+    if (isLoading || page >= totalPages) return;
+    beginNavigation(totalPages);
   }
 
   return (
@@ -98,7 +130,7 @@ function Movie() {
       {isLoading ? <p>Loading…</p> : null}
       {error ? <p className="movie-error">{error}</p> : null}
 
-      <div className="movie-grid">
+      <div className="movie-grid" ref={gridTopRef}>
         {movieList.map((movie) => (
           <article key={movie.id} className="movie-card lcPaUB">
             {movie?.poster_path ? (
@@ -157,11 +189,44 @@ function Movie() {
         ))}
       </div>
 
-      {hasMore ? (
-        <button type="button" onClick={handleLoadMore} disabled={isLoadingMore}>
-          {isLoadingMore ? "Loading…" : "Load more"}
+      {/* Pagination layout like your screenshot */}
+      <div className="movie-pagination" aria-label="Pagination">
+        <button
+          type="button"
+          onClick={handleFirst}
+          disabled={isLoading || page <= 1}
+        >
+          ‹ First
         </button>
-      ) : null}
+
+        <button
+          type="button"
+          onClick={handlePrev}
+          disabled={isLoading || page <= 1}
+        >
+          ‹ Previous
+        </button>
+
+        <span aria-live="polite">
+          Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+        </span>
+
+        <button
+          type="button"
+          onClick={handleNext}
+          disabled={isLoading || page >= totalPages}
+        >
+          Next ›
+        </button>
+
+        <button
+          type="button"
+          onClick={handleLast}
+          disabled={isLoading || page >= totalPages}
+        >
+          Last ›
+        </button>
+      </div>
     </div>
   );
 }
