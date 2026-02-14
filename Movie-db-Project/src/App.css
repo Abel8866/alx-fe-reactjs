@@ -19,7 +19,7 @@
 .navbar-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 16px;
   padding: 18px 24px;
   flex-wrap: nowrap;
@@ -48,8 +48,9 @@
 .navbar-tabs {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 18px;
+  margin-left: 24px;
 }
 
 .navbar-tab {
@@ -81,6 +82,7 @@
 
 .navbar-search {
   position: relative;
+  margin-left: auto;
   width: min(520px, 100%);
 }
 
@@ -115,8 +117,13 @@
     margin-left: 0;
   }
 
+  .navbar-tabs {
+    margin-left: 0;
+  }
+
   .navbar-search {
     order: 3;
+    margin-left: 0;
     width: 100%;
     max-width: 640px;
   }
@@ -173,6 +180,35 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.movie-card.lcPaUB {
+  transform: translateY(0) scale(1);
+  transition:
+    transform 1500ms ease,
+    box-shadow 1500ms ease;
+  will-change: transform;
+}
+
+.movie-card.lcPaUB:hover {
+  transition:
+    transform 1500ms ease,
+    box-shadow 1500ms ease;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0px 14px 28px rgba(186, 199, 213, 0.65);
+}
+
+.movie-card.lcPaUB:not(:hover) {
+  transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-card.lcPaUB {
+    transition: none;
+  }
+  .movie-card.lcPaUB:hover {
+    transform: none;
+  }
 }
 
 .lcPaUB {
