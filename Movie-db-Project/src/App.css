@@ -6,6 +6,8 @@
 
 .movie-page {
   padding: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
 }
 
 .navbar {
@@ -144,7 +146,7 @@
 }
 
 .movie-title {
-  margin: 0 0 12px;
+  margin: 0 0 24px;
 }
 
 .movie-error {
