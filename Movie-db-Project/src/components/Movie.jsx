@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { discoverMovies, tmdbImageUrl } from "../services/tmdb";
+import StarIcon from "../assets/images/Star.svg";
+import { discoverMovies, getMovieGenreMap, tmdbImageUrl } from "../services/tmdb";
 
 function Movie() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [genreMap, setGenreMap] = useState({});
 
   useEffect(() => {
     const controller = new AbortController();
@@ -13,8 +15,12 @@ function Movie() {
       try {
         setIsLoading(true);
         setError("");
-        const movies = await discoverMovies({ signal: controller.signal });
+        const [movies, genres] = await Promise.all([
+          discoverMovies({ signal: controller.signal }),
+          getMovieGenreMap(),
+        ]);
         setMovieList(movies);
+        setGenreMap(genres);
       } catch (err) {
         if (err?.name === "AbortError") return;
         setError(err instanceof Error ? err.message : "Failed to load movies.");
@@ -49,9 +55,35 @@ function Movie() {
             )}
 
             <div className="movie-meta">
-              <h2 className="movie-name">{movie.title ?? "Untitled"}</h2>
-              {movie.release_date ? (
-                <p className="movie-sub">{movie.release_date}</p>
+              <div className="movie-heading">
+                <h2 className="movie-name">{movie.title ?? "Untitled"}</h2>
+                {movie.release_date ? (
+                  <p className="movie-year">{movie.release_date.slice(0, 4)}</p>
+                ) : null}
+              </div>
+
+              {Array.isArray(movie?.genre_ids) && movie.genre_ids.length ? (
+                <div className="movie-genres" aria-label="Genres">
+                  {movie.genre_ids
+                    .map((id) => genreMap?.[id])
+                    .filter(Boolean)
+                    .slice(0, 3)
+                    .map((name) => (
+                      <span key={name} className="movie-genreChip">
+                        {name}
+                      </span>
+                    ))}
+                </div>
+              ) : null}
+
+              {typeof movie?.vote_average === "number" ? (
+                <div className="movie-ratingRow">
+                  <img className="movie-star" src={StarIcon} alt="" aria-hidden="true" />
+                  <span className="movie-rating">{movie.vote_average.toFixed(1)}</span>
+                  {typeof movie?.vote_count === "number" ? (
+                    <span className="movie-votes">{movie.vote_count} votes</span>
+                  ) : null}
+                </div>
               ) : null}
             </div>
           </article>

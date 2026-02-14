@@ -22,13 +22,14 @@
   justify-content: space-between;
   gap: 16px;
   padding: 18px 24px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .navbar-brand {
   display: inline-flex;
   align-items: center;
   gap: 14px;
+  margin-left: 16px;
   text-decoration: none;
   color: inherit;
   font-weight: 700;
@@ -60,6 +61,18 @@
   font-size: 14px;
   padding: 10px 18px;
   border-radius: 999px;
+  border: 1px solid transparent;
+  transition: border-color 180ms ease;
+}
+
+.navbar-tab:hover,
+.navbar-tab:focus-visible {
+  border-color: rgba(255, 255, 255, 0.75);
+  transition-delay: 120ms;
+}
+
+.navbar-tab:not(:hover):not(:focus-visible) {
+  transition-delay: 0ms;
 }
 
 .navbar-tab--active {
@@ -92,14 +105,34 @@
   font-size: 16px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 565px) {
   .navbar-inner {
+    flex-wrap: wrap;
     justify-content: center;
   }
+
+  .navbar-brand {
+    margin-left: 0;
+  }
+
   .navbar-search {
     order: 3;
     width: 100%;
     max-width: 640px;
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar-brandText {
+    font-size: 17px;
+  }
+
+  .navbar-tab {
+    font-size: 17px;
+  }
+
+  .navbar-searchInput {
+    font-size: 17px;
   }
 }
 
@@ -178,12 +211,86 @@
   gap: 4px;
 }
 
+.movie-heading {
+  display: grid;
+  gap: 6px;
+}
+
 .movie-name {
   font-size: 16px;
   margin: 0;
 }
 
-.movie-sub {
+.movie-year {
   margin: 0;
   opacity: 0.7;
+}
+
+.movie-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.movie-genreChip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #eef0f5;
+  color: #111111;
+  font-size: 13px;
+}
+
+.movie-ratingRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.movie-star {
+  width: 18px;
+  height: 18px;
+}
+
+.movie-rating {
+  font-weight: 700;
+}
+
+.movie-votes {
+  opacity: 0.7;
+}
+
+@media (max-width: 766px) {
+  .movie-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .lcPaUB {
+    min-height: auto;
+    min-width: 0;
+  }
+
+  .movie-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .movie-poster {
+    width: 120px;
+    max-width: 120px;
+    flex: 0 0 auto;
+  }
+
+  .movie-name {
+    font-size: 20px;
+  }
+
+  .movie-meta {
+    gap: 10px;
+  }
 }
