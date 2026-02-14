@@ -29,7 +29,7 @@ function Movie() {
 
   return (
     <div className="movie-page">
-      <h1 className="movie-title">Movies</h1>
+      <h1 className="movie-title">Popular Movies</h1>
 
       {isLoading ? <p>Loading…</p> : null}
       {error ? <p className="movie-error">{error}</p> : null}
