@@ -1,12 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarIcon from "../assets/images/Star.svg";
-import { discoverMovies, getMovieGenreMap, tmdbImageUrl } from "../services/tmdb";
+import {
+  discoverMoviesPage,
+  getMovieGenreMap,
+  tmdbImageUrl,
+} from "../services/tmdb";
 
 function Movie() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [genreMap, setGenreMap] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+
+  const loadMoreControllerRef = useRef(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -15,12 +24,15 @@ function Movie() {
       try {
         setIsLoading(true);
         setError("");
-        const [movies, genres] = await Promise.all([
-          discoverMovies({ signal: controller.signal }),
+        const [moviesPage, genres] = await Promise.all([
+          discoverMoviesPage({ signal: controller.signal, page: 1 }),
           getMovieGenreMap(),
         ]);
-        setMovieList(movies);
+
+        setMovieList(moviesPage.results);
         setGenreMap(genres);
+        setPage(1);
+        setHasMore(moviesPage.page < moviesPage.totalPages);
       } catch (err) {
         if (err?.name === "AbortError") return;
         setError(err instanceof Error ? err.message : "Failed to load movies.");
@@ -30,8 +42,54 @@ function Movie() {
     }
 
     load();
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      loadMoreControllerRef.current?.abort?.();
+    };
   }, []);
+
+  async function handleLoadMore() {
+    if (isLoading || isLoadingMore || !hasMore) return;
+
+    const controller = new AbortController();
+    loadMoreControllerRef.current?.abort?.();
+    loadMoreControllerRef.current = controller;
+
+    try {
+      setIsLoadingMore(true);
+      setError("");
+
+      const nextPage = page + 1;
+      const moviesPage = await discoverMoviesPage({
+        signal: controller.signal,
+        page: nextPage,
+      });
+
+      setMovieList((prev) => {
+        const seen = new Set(prev.map((m) => m?.id).filter(Boolean));
+        const next = Array.isArray(moviesPage.results)
+          ? moviesPage.results
+          : [];
+        const deduped = next.filter((m) => {
+          const id = m?.id;
+          if (!id || seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+        return [...prev, ...deduped];
+      });
+
+      setPage(moviesPage.page);
+      setHasMore(moviesPage.page < moviesPage.totalPages);
+    } catch (err) {
+      if (err?.name === "AbortError") return;
+      setError(
+        err instanceof Error ? err.message : "Failed to load more movies.",
+      );
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
 
   return (
     <div className="movie-page">
@@ -78,10 +136,19 @@ function Movie() {
 
               {typeof movie?.vote_average === "number" ? (
                 <div className="movie-ratingRow">
-                  <img className="movie-star" src={StarIcon} alt="" aria-hidden="true" />
-                  <span className="movie-rating">{movie.vote_average.toFixed(1)}</span>
+                  <img
+                    className="movie-star"
+                    src={StarIcon}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span className="movie-rating">
+                    {movie.vote_average.toFixed(1)}
+                  </span>
                   {typeof movie?.vote_count === "number" ? (
-                    <span className="movie-votes">{movie.vote_count} votes</span>
+                    <span className="movie-votes">
+                      {movie.vote_count} votes
+                    </span>
                   ) : null}
                 </div>
               ) : null}
@@ -89,6 +156,12 @@ function Movie() {
           </article>
         ))}
       </div>
+
+      {hasMore ? (
+        <button type="button" onClick={handleLoadMore} disabled={isLoadingMore}>
+          {isLoadingMore ? "Loading…" : "Load more"}
+        </button>
+      ) : null}
     </div>
   );
 }
