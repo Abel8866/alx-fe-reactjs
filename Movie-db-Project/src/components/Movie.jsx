@@ -20,6 +20,7 @@ function Movie() {
 
   const gridTopRef = useRef(null);
   const pageControllerRef = useRef(null);
+  const shouldScrollAfterLoadRef = useRef(false);
 
   function clampPage(value) {
     const numeric = Number(value);
@@ -79,9 +80,25 @@ function Movie() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!shouldScrollAfterLoadRef.current) return;
+    if (isLoading) return;
+
+    shouldScrollAfterLoadRef.current = false;
+    scrollToTop();
+  }, [page, isLoading]);
+
   function scrollToTop() {
     if (gridTopRef.current?.scrollIntoView) {
       gridTopRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    const scrollingElement =
+      typeof document !== "undefined" ? document.scrollingElement : null;
+
+    if (scrollingElement?.scrollTo) {
+      scrollingElement.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -93,6 +110,9 @@ function Movie() {
   function beginNavigation(targetPage) {
     const safeTarget = clampPage(targetPage);
     if (safeTarget === page) return;
+
+    // Scroll immediately, then scroll again once the new page has finished loading.
+    shouldScrollAfterLoadRef.current = true;
 
     scrollToTop();
 
@@ -130,7 +150,9 @@ function Movie() {
       {isLoading ? <p>Loading…</p> : null}
       {error ? <p className="movie-error">{error}</p> : null}
 
-      <div className="movie-grid" ref={gridTopRef}>
+      <div className="movie-gridTop" ref={gridTopRef} />
+
+      <div className="movie-grid">
         {movieList.map((movie) => (
           <article key={movie.id} className="movie-card lcPaUB">
             {movie?.poster_path ? (

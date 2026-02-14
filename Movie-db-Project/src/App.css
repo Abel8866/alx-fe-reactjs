@@ -151,6 +151,10 @@
   color: #b00020;
 }
 
+.movie-gridTop {
+  scroll-margin-top: 96px;
+}
+
 .movie-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
