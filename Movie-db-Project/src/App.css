@@ -2,6 +2,75 @@
   padding: 16px;
 }
 
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #ffffff;
+  box-shadow: 0px 4px 12px rgba(186, 199, 213, 0.5);
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+}
+
+.navbar-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.navbar-brandText {
+  line-height: 1;
+}
+
+.navbar-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.navbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  opacity: 0.85;
+  padding: 8px 10px;
+  border-radius: 5px;
+}
+
+.navbar-link:hover {
+  opacity: 1;
+}
+
+.navbar-icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (max-width: 480px) {
+  .navbar-brandText {
+    display: none;
+  }
+  .navbar-link span {
+    display: none;
+  }
+}
+
 .movie-title {
   margin: 0 0 12px;
 }
