@@ -12,6 +12,48 @@ function getApiKey() {
   return apiKey;
 }
 
+// Add this (recommended): v4 Read Access Token (Bearer)
+function getAccessToken() {
+  const token = import.meta.env.VITE_TMDB_ACCESS_TOKEN;
+  return token || "";
+}
+
+async function tmdbFetch(path, { signal, params } = {}) {
+  const token = getAccessToken();
+
+  const url = new URL(`${TMDB_BASE_URL}${path}`);
+
+  // If no token, fall back to api_key query param (your current approach).
+  if (!token) {
+    const apiKey = getApiKey();
+    url.searchParams.set("api_key", apiKey);
+  }
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      url.searchParams.set(key, String(value));
+    }
+  }
+
+  const response = await fetch(url, {
+    signal,
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        }
+      : undefined,
+  });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`TMDB request failed (${response.status}). ${text}`.trim());
+  }
+
+  return response.json();
+}
+
 export function tmdbImageUrl(path, size = "w500") {
   if (!path) return "";
   return `https://image.tmdb.org/t/p/${size}${path.startsWith("/") ? "" : "/"}${path}`;
@@ -111,4 +153,14 @@ export async function getMovieGenreMap() {
   })();
 
   return cachedMovieGenreMapPromise;
+}
+
+export async function getMovieDetails(movieId, { signal } = {}) {
+  if (!movieId) throw new Error("getMovieDetails: movieId is required");
+  return tmdbFetch(`/movie/${movieId}`, { signal });
+}
+
+export async function getMovieCredits(movieId, { signal } = {}) {
+  if (!movieId) throw new Error("getMovieCredits: movieId is required");
+  return tmdbFetch(`/movie/${movieId}/credits`, { signal });
 }
