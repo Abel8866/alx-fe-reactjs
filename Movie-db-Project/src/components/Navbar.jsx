@@ -1,7 +1,7 @@
 import VideoIcon from "../assets/images/Video.svg";
 import SearchIcon from "../assets/images/Search.svg";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 function Navbar() {
   const homeHref = import.meta.env.BASE_URL || "/";
@@ -69,12 +69,23 @@ function Navbar() {
         </a>
 
         <nav className="navbar-tabs" aria-label="Sections">
-          <Link className="navbar-tab navbar-tab--active" to={homeHref}>
+          <NavLink
+            to={homeHref}
+            end
+            className={({ isActive }) =>
+              isActive ? "navbar-tab navbar-tab--active" : "navbar-tab"
+            }
+          >
             Movies
-          </Link>
-          <Link className="navbar-tab" to="/people">
+          </NavLink>
+          <NavLink
+            to="/people"
+            className={({ isActive }) =>
+              isActive ? "navbar-tab navbar-tab--active" : "navbar-tab"
+            }
+          >
             People
-          </Link>
+          </NavLink>
         </nav>
 
         <form
