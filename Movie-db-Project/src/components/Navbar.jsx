@@ -42,7 +42,13 @@ function Navbar() {
     if (location.pathname === homeHref) {
       setSearchValue(movieQueryFromUrl);
     }
-  }, [homeHref, isPeoplePage, location.pathname, movieQueryFromUrl, peopleQueryFromUrl]);
+  }, [
+    homeHref,
+    isPeoplePage,
+    location.pathname,
+    movieQueryFromUrl,
+    peopleQueryFromUrl,
+  ]);
 
   return (
     <header className="navbar" role="banner">
