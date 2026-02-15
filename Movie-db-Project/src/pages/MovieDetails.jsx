@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import StarIcon from "../assets/images/Star.svg";
 import {
   getMovieCredits,
   getMovieDetails,
@@ -18,6 +19,8 @@ export default function MovieDetails() {
   const [credits, setCredits] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const detailsRef = useRef(null);
 
   useEffect(() => {
     if (!movieId) {
@@ -82,133 +85,208 @@ export default function MovieDetails() {
   const poster = tmdbImageUrl(movie.poster_path, "w500");
   const backdrop = tmdbImageUrl(movie.backdrop_path, "w1280");
   const cast = Array.isArray(credits?.cast) ? credits.cast : [];
-  const topCast = cast.slice(0, 12);
+  const crew = Array.isArray(credits?.crew) ? credits.crew : [];
+
+  const castWithPhotos = cast.filter((p) => Boolean(p?.profile_path));
+  const crewWithPhotos = crew.filter((p) => Boolean(p?.profile_path));
+
+  const year = movie.release_date ? movie.release_date.slice(0, 4) : "";
+  const rating =
+    typeof movie.vote_average === "number" ? movie.vote_average : null;
+  const votes = typeof movie.vote_count === "number" ? movie.vote_count : null;
+
+  function scrollToDetails() {
+    const node = detailsRef.current;
+    if (!node) return;
+    if (typeof node.scrollIntoView === "function") {
+      node.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 
   return (
-    <div style={{ padding: 16 }}>
-      <Link to="/">← Back</Link>
-
-      {backdrop ? (
-        <div
-          style={{
-            marginTop: 12,
-            borderRadius: 12,
-            overflow: "hidden",
-            maxHeight: 320,
-          }}
-        >
-          <img
-            src={backdrop}
-            alt=""
-            style={{ width: "100%", display: "block", objectFit: "cover" }}
-          />
-        </div>
-      ) : null}
-
-      <div
-        style={{ display: "flex", gap: 16, marginTop: 16, flexWrap: "wrap" }}
+    <div className="movie-details">
+      <header
+        className="movie-detailsHero movie-detailsHero--clickable"
+        style={
+          backdrop
+            ? {
+                "--movie-backdrop": `url(${backdrop})`,
+              }
+            : undefined
+        }
+        role="button"
+        tabIndex={0}
+        aria-label="View movie details"
+        onClick={scrollToDetails}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            scrollToDetails();
+          }
+        }}
       >
-        {poster ? (
-          <img
-            src={poster}
-            alt={movie.title || movie.name || "Poster"}
-            style={{
-              width: 220,
-              borderRadius: 12,
-              objectFit: "cover",
-            }}
-          />
-        ) : null}
+        <div className="movie-detailsHeroBg" aria-hidden="true" />
+        <div className="movie-detailsHeroOverlay" aria-hidden="true" />
 
-        <div style={{ minWidth: 260, maxWidth: 720 }}>
-          <h1 style={{ margin: 0 }}>{movie.title}</h1>
+        <div className="movie-detailsHeroInner">
+          <div className="movie-detailsHeroLeft">
+            <h1 className="movie-detailsTitle">
+              {movie.title}
+              {year ? (
+                <span className="movie-detailsYear"> ({year})</span>
+              ) : null}
+            </h1>
 
-          <div style={{ marginTop: 8, opacity: 0.85 }}>
-            {movie.release_date ? <span>{movie.release_date}</span> : null}
-            {movie.runtime ? (
-              <span>
-                {movie.release_date ? " • " : ""}
-                {movie.runtime} min
-              </span>
-            ) : null}
-            {Array.isArray(movie.genres) && movie.genres.length ? (
-              <span>
-                {movie.release_date || movie.runtime ? " • " : ""}
-                {movie.genres
-                  .map((g) => g.name)
-                  .filter(Boolean)
-                  .join(", ")}
-              </span>
+            {rating !== null ? (
+              <div className="movie-detailsHeroRating" aria-label="Rating">
+                <div className="movie-detailsHeroRatingRow">
+                  <img
+                    className="movie-detailsHeroStar"
+                    src={StarIcon}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  <span className="movie-detailsHeroScore">
+                    {rating.toFixed(1)}
+                  </span>
+                  <span className="movie-detailsHeroOutOf">/ 10</span>
+                </div>
+                {votes !== null ? (
+                  <div className="movie-detailsHeroVotes">{votes} votes</div>
+                ) : null}
+              </div>
             ) : null}
           </div>
-
-          <h2 style={{ marginTop: 16, marginBottom: 6 }}>Overview</h2>
-          <p style={{ marginTop: 0, lineHeight: 1.5 }}>
-            {movie.overview || "No description available."}
-          </p>
         </div>
-      </div>
+      </header>
 
-      <h2 style={{ marginTop: 20, marginBottom: 10 }}>Top Cast</h2>
-      {topCast.length === 0 ? (
-        <p>No cast info available.</p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-            gap: 12,
-          }}
+      <main className="movie-detailsBody">
+        <section
+          ref={detailsRef}
+          className="movie-detailsCard"
+          aria-label="Movie details"
         >
-          {topCast.map((person) => {
-            const profile = tmdbImageUrl(person.profile_path, "w185");
-            return (
-              <div
-                key={person.id}
-                style={{
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                }}
-              >
-                {profile ? (
-                  <img
-                    src={profile}
-                    alt={person.name}
-                    style={{
-                      width: "100%",
-                      height: 240,
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                    loading="lazy"
-                  />
-                ) : (
-                  <div
-                    style={{
-                      height: 240,
-                      display: "grid",
-                      placeItems: "center",
-                      opacity: 0.7,
-                    }}
-                  >
-                    No photo
-                  </div>
-                )}
+          <div className="movie-detailsCardInner">
+            <div className="movie-detailsPosterCol">
+              {poster ? (
+                <img
+                  className="movie-detailsPoster"
+                  src={poster}
+                  alt={movie.title || "Movie poster"}
+                />
+              ) : (
+                <div className="movie-detailsPosterEmpty">No image</div>
+              )}
+            </div>
 
-                <div style={{ padding: 10 }}>
-                  <div style={{ fontWeight: 700 }}>{person.name}</div>
-                  {person.character ? (
-                    <div style={{ opacity: 0.8, marginTop: 4 }}>
-                      as {person.character}
-                    </div>
+            <div className="movie-detailsInfo">
+              <div className="movie-detailsInfoHeader">
+                <h2 className="movie-detailsInfoTitle">{movie.title}</h2>
+                <div className="movie-detailsMeta">
+                  {movie.release_date ? (
+                    <span>{movie.release_date}</span>
+                  ) : null}
+                  {movie.runtime ? (
+                    <span>
+                      {movie.release_date ? " • " : ""}
+                      {movie.runtime} min
+                    </span>
                   ) : null}
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+
+              {Array.isArray(movie.genres) && movie.genres.length ? (
+                <div className="movie-genres" aria-label="Genres">
+                  {movie.genres
+                    .map((g) => g?.name)
+                    .filter(Boolean)
+                    .map((name) => (
+                      <span key={name} className="movie-genreChip">
+                        {name}
+                      </span>
+                    ))}
+                </div>
+              ) : null}
+
+              <h3 className="movie-detailsSectionTitle">Overview</h3>
+              <p className="movie-detailsOverview">
+                {movie.overview || "No description available."}
+              </p>
+
+              <div className="movie-detailsActions">
+                <Link className="movie-detailsBackLink" to="/">
+                  Back to movies
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="movie-detailsPeople" aria-label="Cast">
+          <h2 className="movie-detailsPeopleTitle">
+            Cast ({castWithPhotos.length})
+          </h2>
+          {castWithPhotos.length === 0 ? (
+            <p className="movie-detailsEmpty">No cast info available.</p>
+          ) : (
+            <div className="people-grid">
+              {castWithPhotos.map((person) => {
+                const profile = tmdbImageUrl(person.profile_path, "w185");
+                return (
+                  <article key={person.id} className="people-card">
+                    <img
+                      className="people-photo"
+                      src={profile}
+                      alt={person.name}
+                      loading="lazy"
+                    />
+                    <div className="people-meta">
+                      <div className="people-name">{person.name}</div>
+                      {person.character ? (
+                        <div className="people-role">{person.character}</div>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="movie-detailsPeople" aria-label="Crew">
+          <h2 className="movie-detailsPeopleTitle">
+            Crew ({crewWithPhotos.length})
+          </h2>
+          {crewWithPhotos.length === 0 ? (
+            <p className="movie-detailsEmpty">No crew info available.</p>
+          ) : (
+            <div className="people-grid">
+              {crewWithPhotos.map((person) => {
+                const profile = tmdbImageUrl(person.profile_path, "w185");
+                return (
+                  <article
+                    key={`${person.id}-${person.job}`}
+                    className="people-card"
+                  >
+                    <img
+                      className="people-photo"
+                      src={profile}
+                      alt={person.name}
+                      loading="lazy"
+                    />
+                    <div className="people-meta">
+                      <div className="people-name">{person.name}</div>
+                      {person.job ? (
+                        <div className="people-role">{person.job}</div>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 }

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import StarIcon from "../assets/images/Star.svg";
 import {
   discoverMoviesPage,
   getMovieGenreMap,
+  searchMoviesPage,
   tmdbImageUrl,
 } from "../services/tmdb";
 
@@ -12,6 +13,13 @@ const MOVIES_PER_PAGE = 20;
 const MAX_PAGES = Math.ceil(MAX_MOVIES / MOVIES_PER_PAGE);
 
 function Movie() {
+  const [searchParams] = useSearchParams();
+
+  const query = useMemo(() => {
+    const q = (searchParams.get("q") || "").trim();
+    return q;
+  }, [searchParams]);
+
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,17 +37,26 @@ function Movie() {
     return Math.max(1, Math.min(MAX_PAGES, Math.floor(numeric)));
   }
 
-  async function loadPage(targetPage, { signal } = {}) {
+  async function loadPage(targetPage, { signal, query: queryOverride } = {}) {
     try {
       setIsLoading(true);
       setError("");
 
       const safePage = clampPage(targetPage);
 
-      const moviesPage = await discoverMoviesPage({
-        signal,
-        page: safePage,
-      });
+      const activeQuery =
+        typeof queryOverride === "string" ? queryOverride : query;
+
+      const moviesPage = activeQuery
+        ? await searchMoviesPage({
+            signal,
+            page: safePage,
+            query: activeQuery,
+          })
+        : await discoverMoviesPage({
+            signal,
+            page: safePage,
+          });
 
       setMovieList(Array.isArray(moviesPage.results) ? moviesPage.results : []);
       const apiPage = moviesPage.page ?? safePage;
@@ -69,7 +86,7 @@ function Movie() {
         const [genres] = await Promise.all([getMovieGenreMap()]);
         setGenreMap(genres);
 
-        await loadPage(1, { signal: controller.signal });
+        await loadPage(1, { signal: controller.signal, query });
       } finally {
         setIsLoading(false);
       }
@@ -80,6 +97,20 @@ function Movie() {
       pageControllerRef.current?.abort?.();
     };
   }, []);
+
+  useEffect(() => {
+    // When the navbar search updates ?q=..., reload from page 1.
+    const controller = new AbortController();
+    pageControllerRef.current?.abort?.();
+    pageControllerRef.current = controller;
+
+    shouldScrollAfterLoadRef.current = true;
+    scrollToTop();
+
+    void loadPage(1, { signal: controller.signal, query });
+    return () => controller.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   useEffect(() => {
     if (!shouldScrollAfterLoadRef.current) return;
@@ -121,7 +152,7 @@ function Movie() {
     pageControllerRef.current?.abort?.();
     pageControllerRef.current = controller;
 
-    void loadPage(safeTarget, { signal: controller.signal });
+    void loadPage(safeTarget, { signal: controller.signal, query });
   }
 
   function handleFirst() {
@@ -146,7 +177,9 @@ function Movie() {
 
   return (
     <div className="movie-page">
-      <h1 className="movie-title">Popular Movies</h1>
+      <h1 className="movie-title">
+        {query ? `Results for "${query}"` : "Popular Movies"}
+      </h1>
 
       {isLoading ? <p>Loading…</p> : null}
       {error ? <p className="movie-error">{error}</p> : null}

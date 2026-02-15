@@ -11,9 +11,7 @@
 }
 
 .navbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: relative;
   background: #000000;
   color: #ffffff;
 }
@@ -369,4 +367,468 @@
   min-width: 180px; /* keeps "Page X of Y" centered */
   text-align: center;
   color: #4a5568;
+}
+
+/* Movie details page (layout inspired by the screenshot) */
+.movie-details {
+  min-height: 100vh;
+}
+
+.movie-detailsHero {
+  position: relative;
+  background: #000000;
+  color: #ffffff;
+  overflow: hidden;
+
+  /* Set via inline style in MovieDetails.jsx */
+  --movie-backdrop: none;
+
+  /* Responsive overlay tuning */
+  --hero-overlay-top: 0.45;
+  --hero-overlay-mid: 0.62;
+  --hero-overlay-bottom: 0.75;
+}
+
+.movie-detailsHero--clickable {
+  cursor: pointer;
+}
+
+.movie-detailsHeroBg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--movie-backdrop);
+  background-size: cover;
+  background-position: center;
+  filter: none;
+  transform: none;
+}
+
+.movie-detailsHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, var(--hero-overlay-top)) 0%,
+    rgba(0, 0, 0, var(--hero-overlay-mid)) 70%,
+    rgba(0, 0, 0, var(--hero-overlay-bottom)) 100%
+  );
+}
+
+@media (min-width: 1024px) {
+  .movie-detailsHero {
+    --hero-overlay-top: 0.38;
+    --hero-overlay-mid: 0.58;
+    --hero-overlay-bottom: 0.72;
+  }
+}
+
+.movie-detailsHeroInner {
+  max-width: 1200px;
+  margin: 170px auto;
+  padding: 56px 24px 34px;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.movie-detailsHeroLeft {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 34px;
+  width: calc(100% - 48px);
+  max-width: 1200px;
+}
+
+.movie-detailsTitle {
+  margin: 0;
+  font-size: 56px;
+  line-height: 1.06;
+}
+
+.movie-detailsHeroRating {
+  margin-top: 16px;
+}
+
+.movie-detailsHeroRatingRow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.movie-detailsHeroStar {
+  width: 44px;
+  height: 44px;
+}
+
+.movie-detailsHeroScore {
+  font-size: 44px;
+  font-weight: 700;
+}
+
+.movie-detailsHeroOutOf {
+  font-size: 18px;
+  opacity: 0.95;
+  font-weight: 600;
+}
+
+.movie-detailsHeroVotes {
+  margin-top: 10px;
+  font-size: 18px;
+  opacity: 0.95;
+}
+
+.movie-detailsYear {
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.movie-detailsBody {
+  padding: 0 10px 40px;
+}
+
+.movie-detailsCard {
+  max-width: 1100px;
+  margin: 24px auto 0;
+  position: relative;
+}
+
+.movie-detailsCardInner {
+  background: #ffffff;
+  color: #111111;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(186, 199, 213, 0.5);
+  padding: 16px;
+
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.movie-detailsPoster {
+  width: 100%;
+  border-radius: 10px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.movie-detailsPosterEmpty {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #f2f2f2;
+  color: #444;
+}
+
+.movie-detailsInfoHeader {
+  display: grid;
+  gap: 8px;
+}
+
+.movie-detailsInfoTitle {
+  margin: 0;
+  font-size: 20px;
+}
+
+.movie-detailsMeta {
+  opacity: 0.85;
+}
+
+.movie-detailsSectionTitle {
+  margin: 14px 0 8px;
+  font-size: 16px;
+}
+
+.movie-detailsOverview {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.movie-detailsActions {
+  margin-top: 16px;
+}
+
+.movie-detailsBackLink {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: #eef0f5;
+  color: #111111;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.movie-detailsBackLink:hover,
+.movie-detailsBackLink:focus-visible {
+  text-decoration: none;
+}
+
+.movie-detailsPeople {
+  max-width: 1100px;
+  margin: 20px auto 0;
+}
+
+.movie-detailsPeopleTitle {
+  margin: 22px 0 12px;
+  font-size: 18px;
+}
+
+.movie-detailsEmpty {
+  opacity: 0.8;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .people-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .people-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.people-card {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(186, 199, 213, 0.5);
+  overflow: hidden;
+}
+
+.people-photo {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.people-photo--empty {
+  background: #f2f2f2;
+  color: #444;
+  display: grid;
+  place-items: center;
+}
+
+.people-meta {
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.people-name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.people-role {
+  opacity: 0.8;
+  font-size: 12px;
+}
+
+@media (max-width: 767px) {
+  .movie-detailsHero {
+    --hero-overlay-top: 0.52;
+    --hero-overlay-mid: 0.7;
+    --hero-overlay-bottom: 0.82;
+  }
+
+  .movie-detailsTitle {
+    font-size: 38px;
+  }
+
+  .movie-detailsHeroInner {
+    padding: 40px 16px 26px;
+    min-height: 280px;
+  }
+
+  .movie-detailsHeroLeft {
+    bottom: 26px;
+    width: calc(100% - 32px);
+  }
+
+  .movie-detailsHeroStar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .movie-detailsHeroScore {
+    font-size: 34px;
+  }
+
+  .movie-detailsCard {
+    margin-top: -24px;
+  }
+
+  .movie-detailsCardInner {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-detailsPosterCol {
+    max-width: 320px;
+  }
+}
+
+.people-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 12px 48px;
+}
+
+.people-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.people-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+}
+
+.people-search {
+  flex: 0 0 auto;
+}
+
+.people-searchInput {
+  width: min(420px, 56vw);
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  padding: 0 14px;
+  outline: none;
+}
+
+.people-searchInput:focus {
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+}
+
+.people-loading,
+.people-error {
+  margin: 8px 0 14px;
+  color: #111;
+}
+
+.people-error {
+  color: #b91c1c;
+}
+
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.person-card {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.person-photoWrap {
+  background: #f3f4f6;
+}
+
+.person-photo,
+.person-photoPlaceholder {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: block;
+  object-fit: cover;
+}
+
+.person-photoPlaceholder {
+  background: #d1d5db;
+  position: relative;
+}
+
+.person-photoPlaceholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  opacity: 0.55;
+}
+
+.person-name {
+  padding: 10px 10px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.25;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+}
+
+.people-pagination {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.people-pageBtn {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f3f4f6;
+  cursor: pointer;
+}
+
+.people-pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.people-pageInfo {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.75);
+  padding: 0 6px;
+}
+
+@media (max-width: 1024px) {
+  .people-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .people-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .people-searchInput {
+    width: 100%;
+  }
+  .people-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

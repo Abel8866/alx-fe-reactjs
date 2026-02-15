@@ -83,6 +83,30 @@ export async function discoverMoviesPage({ signal, page = 1 } = {}) {
   };
 }
 
+export async function searchMoviesPage({ signal, page = 1, query } = {}) {
+  const q = (query || "").trim();
+  if (!q) {
+    return discoverMoviesPage({ signal, page });
+  }
+
+  const pageNumber = Number.isFinite(Number(page)) ? Number(page) : 1;
+  const data = await tmdbFetch(`/search/movie`, {
+    signal,
+    params: {
+      query: q,
+      page: pageNumber,
+      include_adult: false,
+      language: "en-US",
+    },
+  });
+
+  return {
+    results: Array.isArray(data?.results) ? data.results : [],
+    page: typeof data?.page === "number" ? data.page : pageNumber,
+    totalPages: typeof data?.total_pages === "number" ? data.total_pages : 1,
+  };
+}
+
 export async function discoverMovies({ signal, page = 1, pages = 1 } = {}) {
   const apiKey = getApiKey();
 
