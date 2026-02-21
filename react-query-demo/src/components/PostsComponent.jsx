@@ -16,6 +16,7 @@ export default function PostsComponent() {
     error,
     isFetching,
     refetch,
+    dataUpdatedAt,
   } = useQuery("posts", fetchPosts, {
     staleTime: 1000 * 60,
     cacheTime: 1000 * 60 * 10,
@@ -37,6 +38,15 @@ export default function PostsComponent() {
   return (
     <div>
       <h2>Posts</h2>
+      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
+        <button type="button" onClick={() => refetch()} disabled={isFetching}>
+          {isFetching ? "Refreshing..." : "Refetch posts"}
+        </button>
+        <p style={{ margin: 0 }}>
+          Last updated:{" "}
+          {dataUpdatedAt ? new Date(dataUpdatedAt).toLocaleTimeString() : "-"}
+        </p>
+      </div>
       {isFetching ? <p>Updating...</p> : null}
       <ul>
         {posts?.slice(0, 10).map((post) => (
