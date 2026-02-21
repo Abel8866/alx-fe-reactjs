@@ -4,8 +4,6 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import Profile from "./components/Profile.jsx";
-import ProfileDetails from "./components/ProfileDetails.jsx";
-import ProfileSettings from "./components/ProfileSettings.jsx";
 import BlogPost from "./components/BlogPost.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./components/Login.jsx";
@@ -86,11 +84,7 @@ function App() {
         />
 
         <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
-          <Route path="/profile" element={<Profile />}>
-            <Route index element={<ProfileDetails />} />
-            <Route path="details" element={<ProfileDetails />} />
-            <Route path="settings" element={<ProfileSettings />} />
-          </Route>
+          <Route path="/profile/*" element={<Profile />} />
         </Route>
 
         <Route path="/blog/:slug" element={<BlogPost />} />

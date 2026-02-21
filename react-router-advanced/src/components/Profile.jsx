@@ -1,4 +1,6 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
+import ProfileDetails from "./ProfileDetails.jsx";
+import ProfileSettings from "./ProfileSettings.jsx";
 
 export default function Profile() {
   return (
@@ -13,7 +15,11 @@ export default function Profile() {
         <Link to="settings">Settings</Link>
       </nav>
 
-      <Outlet />
+      <Routes>
+        <Route index element={<ProfileDetails />} />
+        <Route path="details" element={<ProfileDetails />} />
+        <Route path="settings" element={<ProfileSettings />} />
+      </Routes>
     </div>
   );
 }
