@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext.jsx";
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
 
   const fromPath = location.state?.from?.pathname || "/profile";
 
@@ -13,7 +15,7 @@ export default function Login({ onLogin }) {
       <button
         type="button"
         onClick={() => {
-          onLogin();
+          login();
           navigate(fromPath, { replace: true });
         }}
       >

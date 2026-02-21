@@ -7,6 +7,7 @@ import Profile from "./components/Profile.jsx";
 import BlogPost from "./components/BlogPost.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./components/Login.jsx";
+import { AuthProvider, useAuth } from "./auth/AuthContext.jsx";
 
 function Home() {
   const [count, setCount] = useState(0);
@@ -55,9 +56,9 @@ function NotFound() {
   );
 }
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+function RouterApp() {
+  const { logout } = useAuth();
+  // Keeping the counter state in Home as-is; this local state is only for Home.
   return (
     <BrowserRouter>
       <nav
@@ -69,7 +70,7 @@ function App() {
         <Link to="/profile">Profile</Link>
         <Link to="/blog/1">Blog Post</Link>
         <Link to="/login">Login</Link>
-        <button type="button" onClick={() => setIsAuthenticated(false)}>
+        <button type="button" onClick={() => logout()}>
           Log out
         </button>
       </nav>
@@ -78,12 +79,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
 
-        <Route
-          path="/login"
-          element={<Login onLogin={() => setIsAuthenticated(true)} />}
-        />
+        <Route path="/login" element={<Login />} />
 
-        <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+        <Route element={<ProtectedRoute />}>
           <Route path="/profile/*" element={<Profile />} />
         </Route>
 
@@ -91,6 +89,14 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <RouterApp />
+    </AuthProvider>
   );
 }
 
