@@ -20,7 +20,7 @@ describe("TodoList", () => {
     const input = screen.getByLabelText(/new todo/i);
     fireEvent.change(input, { target: { value: "Buy milk" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /add/i }));
+    fireEvent.submit(screen.getByLabelText(/add todo form/i));
 
     expect(screen.getByText("Buy milk")).toBeInTheDocument();
   });
