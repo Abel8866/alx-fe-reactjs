@@ -20,6 +20,7 @@ export default function PostsComponent() {
   } = useQuery("posts", fetchPosts, {
     staleTime: 1000 * 60,
     cacheTime: 1000 * 60 * 10,
+    keepPreviousData: true,
     retry: 1,
     refetchOnWindowFocus: false,
   });
