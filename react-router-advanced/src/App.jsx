@@ -3,6 +3,12 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import Profile from "./components/Profile.jsx";
+import ProfileDetails from "./components/ProfileDetails.jsx";
+import ProfileSettings from "./components/ProfileSettings.jsx";
+import BlogPost from "./components/BlogPost.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Login from "./components/Login.jsx";
 
 function Home() {
   const [count, setCount] = useState(0);
@@ -52,6 +58,8 @@ function NotFound() {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
     <BrowserRouter>
       <nav
@@ -60,11 +68,32 @@ function App() {
       >
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
+        <Link to="/profile">Profile</Link>
+        <Link to="/blog/hello-world">Blog Post</Link>
+        <Link to="/login">Login</Link>
+        <button type="button" onClick={() => setIsAuthenticated(false)}>
+          Log out
+        </button>
       </nav>
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+
+        <Route
+          path="/login"
+          element={<Login onLogin={() => setIsAuthenticated(true)} />}
+        />
+
+        <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+          <Route path="/profile" element={<Profile />}>
+            <Route index element={<ProfileDetails />} />
+            <Route path="details" element={<ProfileDetails />} />
+            <Route path="settings" element={<ProfileSettings />} />
+          </Route>
+        </Route>
+
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
