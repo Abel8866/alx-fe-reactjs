@@ -21,14 +21,14 @@ This project demonstrates:
 
 - Basic routing (`Routes`, `Route`, `Link`)
 - Nested routing via `Outlet` (Profile sub-sections)
-- Dynamic routing via URL params (`/blog/:slug`)
+- Dynamic routing via URL params (`/blog/:id`)
 - Protected routes with a simple authentication check (redirects to `/login`)
 
 ### Route Map
 
 - `/` Home
 - `/about` About
-- `/blog/:slug` Dynamic blog post (example: `/blog/hello-world`)
+- `/blog/:id` Dynamic blog post (example: `/blog/1`)
 - `/login` Simulated login screen
 - `/profile` Protected (requires login)
   - `/profile` (index) ProfileDetails
@@ -44,21 +44,21 @@ This project demonstrates:
 ### Functional Testing Checklist
 
 1. Basic navigation
-	- Use the top nav to move between Home and About.
+   - Use the top nav to move between Home and About.
 
 2. Dynamic route
-	- Visit `/blog/hello-world`.
-	- Confirm the page reads the `slug` param and displays `hello-world`.
+   - Visit `/blog/1`.
+   - Confirm the page reads the `id` param and displays `1`.
 
 3. Protected route + redirect
-	- While logged out, try to open `/profile`.
-	- Confirm you are redirected to `/login`.
-	- Click “Log in” and confirm you are redirected back to `/profile`.
+   - While logged out, try to open `/profile`.
+   - Confirm you are redirected to `/login`.
+   - Click “Log in” and confirm you are redirected back to `/profile`.
 
 4. Nested routes
-	- From `/profile`, click “Details” and “Settings”.
-	- Confirm the nested content changes while staying inside the Profile page.
+   - From `/profile`, click “Details” and “Settings”.
+   - Confirm the nested content changes while staying inside the Profile page.
 
 5. Logout behavior
-	- Click “Log out”.
-	- Try opening `/profile/settings` directly and confirm it redirects to `/login`.
+   - Click “Log out”.
+   - Try opening `/profile/settings` directly and confirm it redirects to `/login`.

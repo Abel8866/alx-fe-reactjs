@@ -67,7 +67,7 @@ function App() {
         <Link to="/">Home</Link>
         <Link to="/about">About</Link>
         <Link to="/profile">Profile</Link>
-        <Link to="/blog/hello-world">Blog Post</Link>
+        <Link to="/blog/1">Blog Post</Link>
         <Link to="/login">Login</Link>
         <button type="button" onClick={() => setIsAuthenticated(false)}>
           Log out
@@ -87,7 +87,7 @@ function App() {
           <Route path="/profile/*" element={<Profile />} />
         </Route>
 
-        <Route path="/blog/:slug" element={<BlogPost />} />
+        <Route path="/blog/:id" element={<BlogPost />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
