@@ -5,9 +5,6 @@ describe("TestingComponent", () => {
   test("renders the testing component", () => {
     render(<TestingComponent />);
 
-    expect(screen.getByTestId("testing-component")).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /testing component/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Testing Component")).toBeInTheDocument();
   });
 });

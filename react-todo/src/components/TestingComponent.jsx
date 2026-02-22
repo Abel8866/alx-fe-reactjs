@@ -1,9 +1,5 @@
 export function TestingComponent() {
-  return (
-    <div data-testid="testing-component">
-      <h1>Testing Component</h1>
-    </div>
-  );
+  return <div>Testing Component</div>;
 }
 
 export default TestingComponent;
