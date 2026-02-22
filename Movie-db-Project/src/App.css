@@ -605,6 +605,55 @@
   border-radius: 10px;
   box-shadow: 0px 4px 12px rgba(186, 199, 213, 0.5);
   overflow: hidden;
+
+  display: block;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 1500ms ease,
+    box-shadow 1500ms ease;
+  will-change: transform;
+}
+
+.people-card:hover {
+  cursor: pointer;
+  transition:
+    transform 1500ms ease,
+    box-shadow 1500ms ease;
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0px 14px 28px rgba(186, 199, 213, 0.65);
+}
+
+.people-card:not(:hover) {
+  transition-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .people-card {
+    transition: none;
+  }
+  .people-card:hover {
+    transform: none;
+  }
+}
+
+.people-cardLink,
+.person-cardLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.people-cardLink:hover,
+.people-cardLink:focus-visible,
+.person-cardLink:hover,
+.person-cardLink:focus-visible {
+  color: inherit;
+  text-decoration: none;
+}
+
+.people-cardLink:focus-visible,
+.person-cardLink:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.45);
+  outline-offset: 3px;
 }
 
 .people-photo {
