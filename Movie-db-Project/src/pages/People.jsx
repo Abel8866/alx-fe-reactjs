@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG = "https://image.tmdb.org/t/p/w342";
@@ -97,7 +97,13 @@ export default function People() {
         {people.map((p) => {
           const img = p?.profile_path ? `${TMDB_IMG}${p.profile_path}` : "";
           return (
-            <article key={p.id} className="person-card" title={p?.name || ""}>
+            <Link
+              key={p.id}
+              to={`/people/${p.id}`}
+              className="person-card person-cardLink"
+              title={p?.name || ""}
+              aria-label={`View details for ${p?.name || "this person"}`}
+            >
               <div className="person-photoWrap">
                 {img ? (
                   <img
@@ -114,7 +120,7 @@ export default function People() {
                 )}
               </div>
               <div className="person-name">{p?.name}</div>
-            </article>
+            </Link>
           );
         })}
       </section>

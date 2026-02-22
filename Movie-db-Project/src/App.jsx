@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import MoviesPage from "./pages/MoviesPage";
 import MovieDetails from "./pages/MovieDetails";
 import People from "./pages/People";
+import PeopleDetails from "./pages/PeopleDetails";
 
 function Layout() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/" element={<MoviesPage />} />
         <Route path="/movies/:id" element={<MovieDetails />} />
         <Route path="/people" element={<People />} />
+        <Route path="/people/:id" element={<PeopleDetails />} />
       </Route>
     </Routes>
   );

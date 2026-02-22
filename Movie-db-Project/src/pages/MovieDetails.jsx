@@ -233,7 +233,12 @@ export default function MovieDetails() {
               {castWithPhotos.map((person) => {
                 const profile = tmdbImageUrl(person.profile_path, "w185");
                 return (
-                  <article key={person.id} className="people-card">
+                  <Link
+                    key={person.id}
+                    to={`/people/${person.id}`}
+                    className="people-card people-cardLink"
+                    aria-label={`View details for ${person.name || "this person"}`}
+                  >
                     <img
                       className="people-photo"
                       src={profile}
@@ -246,7 +251,7 @@ export default function MovieDetails() {
                         <div className="people-role">{person.character}</div>
                       ) : null}
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>
@@ -264,9 +269,11 @@ export default function MovieDetails() {
               {crewWithPhotos.map((person) => {
                 const profile = tmdbImageUrl(person.profile_path, "w185");
                 return (
-                  <article
+                  <Link
                     key={`${person.id}-${person.job}`}
-                    className="people-card"
+                    to={`/people/${person.id}`}
+                    className="people-card people-cardLink"
+                    aria-label={`View details for ${person.name || "this person"}`}
                   >
                     <img
                       className="people-photo"
@@ -280,7 +287,7 @@ export default function MovieDetails() {
                         <div className="people-role">{person.job}</div>
                       ) : null}
                     </div>
-                  </article>
+                  </Link>
                 );
               })}
             </div>

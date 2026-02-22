@@ -188,3 +188,20 @@ export async function getMovieCredits(movieId, { signal } = {}) {
   if (!movieId) throw new Error("getMovieCredits: movieId is required");
   return tmdbFetch(`/movie/${movieId}/credits`, { signal });
 }
+
+export async function getPersonDetails(personId, { signal } = {}) {
+  if (!personId) throw new Error("getPersonDetails: personId is required");
+  return tmdbFetch(`/person/${personId}`, {
+    signal,
+    params: { language: "en-US" },
+  });
+}
+
+export async function getPersonCombinedCredits(personId, { signal } = {}) {
+  if (!personId)
+    throw new Error("getPersonCombinedCredits: personId is required");
+  return tmdbFetch(`/person/${personId}/combined_credits`, {
+    signal,
+    params: { language: "en-US" },
+  });
+}
