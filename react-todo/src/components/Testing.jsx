@@ -1,1 +1,3 @@
-export { default } from "./TestingComponent.jsx";
+import TestingComponent from "./TestingComponent.jsx";
+
+export default TestingComponent;
