@@ -12,6 +12,19 @@ Then run:
 - `npm install`
 - `npm run dev`
 
+## Deploying to Vercel
+
+Vercel does not read your local `.env.local` file from your computer. You must set the env var in Vercel:
+
+- Project → **Settings** → **Environment Variables**
+- Add `VITE_TMDB_API_KEY` with your TMDB key
+- Make sure it’s added for **Production** (and **Preview** if you use preview deploys)
+- Redeploy after saving the env var
+
+If this repo contains multiple apps, also ensure Vercel is building the right folder:
+
+- Project → **Settings** → **General** → **Root Directory** → select `Movie-db-Project`
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
